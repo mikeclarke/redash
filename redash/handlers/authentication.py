@@ -170,6 +170,18 @@ def login(org_slug=None):
 
     google_auth_url = get_google_auth_url(next_path)
 
+    # Seamless redirection if SAML is the only login allowed
+    seamless_redirect = all((
+        not settings.GOOGLE_OAUTH_ENABLED,
+        not current_org.get_setting('auth_password_login_enabled'),
+        not settings.REMOTE_USER_LOGIN_ENABLED,
+        not settings.LDAP_LOGIN_ENABLED,
+        current_org.get_setting('auth_saml_enabled'),
+    ))
+
+    if seamless_redirect:
+        return redirect(url_for('saml_auth.sp_initiated', org_slug=org_slug, next=next_path))
+
     return render_template("login.html",
                            org_slug=org_slug,
                            next=next_path,

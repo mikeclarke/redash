@@ -200,6 +200,8 @@ const config = {
       {
         context: [
           "/login",
+          "/saml/login",
+          "/saml/callback",
           "/logout",
           "/invite",
           "/setup",
